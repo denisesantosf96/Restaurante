@@ -1,0 +1,33 @@
+@model X.PagedList.IPagedList<ItensPedido>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+
+<table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th>Garçom</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Valor</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+            <tr>
+            <td>@Model[i].Nome</td>
+            <td>@Model[i].NomeProduto</td>
+            <td>@Model[i].Quantidade</td>
+            <td>@Model[i].ValorItem</td>
+            <td><input type="button" name="EditarItem" value="Editar" class="btn btn-dark" onclick="EditarItem(@Model[i].Id)">
+            <input type="button" name="ExcluirItem" value="Excluir" class="btn btn-danger" onclick="Excluir(@Model[i].Id)"></td>
+            
+            </tr>
+            }
+        
+        </tbody>
+    </table>
+
+    @Html.PagedListPager(Model, pagina => Url.Action("Index", new { pagina })) <!--Com este comando aparece os numeros-->
+

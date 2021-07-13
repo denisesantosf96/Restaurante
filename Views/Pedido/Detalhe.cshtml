@@ -1,0 +1,329 @@
+@model Pedido
+@{
+    ViewData["Title"] = "Adicionar um novo Pedido";
+}
+
+@section Scripts{
+
+}
+
+<div class="text-center">
+    <h4>@if (Model.Id > 0)
+        {
+            @Html.Raw("Editar Pedido")
+            ;
+        }
+        else
+        {
+            @Html.Raw("Incluir Pedido")
+            ;
+        }
+    </h4>
+</div>
+
+<div id="tabs" #tabs>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-target="#cadastro" data-toggle="tab">Pedido</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-target="#itens" data-toggle="tab">Itens</a>
+        </li>
+
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="cadastro">
+
+            <form method="POST" asp-action="Detalhe" asp-controller="Pedido" class="form p-5"
+                style="border: 3px solid grey; background: #E6E6E6; border-radius: 15px; margin-top: 30px;">
+                <div class="text-danger">@Html.ValidationSummary()</div>
+
+                <div class="row">
+                     <div class="col-md-3">
+                        <label class="form-label">Nº do Pedido</label>
+                        <input asp-for="Id" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-3">
+                        
+                        <input asp-for="IdRestaurante" type="hidden" class="form-control">
+                        <label class="form-label">Status</label>
+                        <select asp-for="Status" class="form-control" onchange="HabilitarPagamento()" disabled> 
+                            <option>Aberto</option>
+                            <option>Cancelado</option>
+                            <option>Pago</option>
+                        </select>
+                    </div>
+                   
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nº da Mesa</label>
+                        <select asp-items="@ViewBag.Mesas" asp-for="IdMesa" class="form-control" disabled>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Nome</label>
+                        <select asp-items="@ViewBag.Clientes" asp-for="IdCliente" class="form-control" disabled></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data</label>
+                        <input asp-for="Data" type="datetime-local" class="form-control" disabled>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Quantidade de Itens</label>
+                        <input asp-for="QuantidadeDeItens" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Valor</label>
+                        <input asp-for="Valor" type="text" class="form-control" disabled>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select asp-for="FormaPagamento" class="form-control" disabled>
+                            <option>Cartão de Crédito</option>
+                            <option>Cartão de Débito</option>
+                            <option>Cheque</option>
+                            <option>Dinheiro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data do Pagamento</label>
+                        <input asp-for="DataPagamento" type="text" class="form-control" disabled>
+                    </div>
+                </div>    
+
+                <input id="SalvarPedido" type="submit" value="Salvar" class="btn btn-success"  disabled
+                    style="margin-top: 30px; margin-bottom: 15px;">
+                <input type="button" value="Voltar" onclick="Voltar()" class="btn btn-success"
+                    style="margin-top: 30px; margin-bottom: 15px;"></td>    
+            </form>
+        </div>
+
+
+        <div class="tab-pane" id="itens">
+            <div id="divItem" hidden>
+                <form class="form p-5"
+                    style="border: 3px solid grey; background: #E6E6E6; border-radius: 15px; margin-top: 30px;">
+                    <div class="text-danger" id="divErroItem"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input id="IdItemPedido" type="hidden" class="form-control">
+                            <label class="form-label">Garçom</label>
+                            <select asp-items="@ViewBag.Garcons" id="IdGarcom" class="form-control" disabled></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Produto</label>
+                            <select asp-items="@ViewBag.Produtos" id="IdProduto" class="form-control" disabled></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Quantidade</label>
+                            <input id="Quantidade" type="text" class="form-control" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Valor</label>
+                            <input id="ValorItem" type="text" class="form-control" disabled maxlength="11">
+                        </div>
+                    </div>
+
+                    <input type="button" value="Salvar" onclick="SalvarItemPedido()" class="btn btn-success" 
+                        style="margin-top: 30px; margin-bottom: 15px;">
+                    <input type="button" value="Cancelar" onclick="Cancelar()" class="btn btn-danger"
+                    style="margin-top: 30px; margin-bottom: 15px;"></td>    
+                </form>
+
+            </div>
+
+            <input type="button" id="Novo" value="Novo" onclick="Adicionar()" class="btn btn-primary" disabled
+                style="margin-top: 30px; margin-bottom: 30px;">
+            <input type="button" value="Voltar" onclick="Voltar()" class="btn btn-primary" 
+                    style="margin-top: 30px; margin-bottom: 30px;"></td>    
+            <div id="divpartialitens">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    window.onload = function () {
+        PesquisarItens();
+
+        $('#ValorItem').inputmask("99999999,99"); 
+    }
+
+    function OcultarItem(){
+        var editar = $('[name=EditarItem]');
+
+        for(a = 0; a < editar.length; a++){
+            var input = editar[a];
+            input.hidden=true;
+        }
+
+        var excluir = $('[name=ExcluirItem]');
+        
+        for(a = 0; a < excluir.length; a++){
+            var input = excluir[a];
+            input.hidden=true;
+        }
+    }
+
+    function VerificarSituacao(){
+        var status = $('#Status').val();
+        if (status == 'Aberto'){
+            $('#Status').prop('disabled',false);
+            $('#IdMesa').prop('disabled',false);
+            $('#IdCliente').prop('disabled',false);
+            $('#Data').prop('disabled',false);
+            $('#SalvarPedido').prop('disabled',false);
+            $('#Novo').prop('disabled',false);
+            $('#IdGarcom').prop('disabled',false);
+            $('#IdProduto').prop('disabled',false);
+            $('#Quantidade').prop('disabled',false);
+            $('#ValorItem').prop('disabled',false);
+        } else {
+            $('#SalvarPedido').hide();
+            $('#Novo').hide();
+            OcultarItem();
+        }
+        
+    }
+
+    function PesquisarItens() {
+        //var result = document.getElementById("textopesquisa").value;
+        var result = $('#Id').val(); //atribui a variavel result o valor do input com id textopesquisa  . quando o val está vazio significa que ele esta pegando o valor  
+        var url = '/ItensPedido/ListaPartialView';
+        var parametros = { idpedido: result };
+        $.get(url, parametros) //data parametros para enviar para a controller
+            .done(function (data) {
+                $('#divpartialitens').html(data);
+                VerificarSituacao();  //como essa requisiçao retorna o partialview no "data", ele incherta no html dentro da divpartial.  
+            });
+    }
+
+    function Adicionar() {
+        $('#divItem').prop('hidden', false);
+        Limpar();
+    }
+
+    function SalvarItemPedido() {
+        var idItemPedido = $('#IdItemPedido').val();
+        var idPedido = $('#Id').val();
+        var garcom = $('#IdGarcom').val();
+        var produto = $('#IdProduto').val();
+        var quantidade = $('#Quantidade').val();
+        var valoritem = $('#ValorItem').val();
+        debugger;
+        if (quantidade == "") {
+            $('#divErroItem').html("Preencha a quantidade, por favor");
+            return;
+        }
+        if (valoritem == "") {
+            $('#divErroItem').html("Preencha o valor, por favor");
+            return;
+        }
+
+        var url = '/ItensPedido/Salvar';
+        var parametros = {
+            Id: idItemPedido, IdPedido: idPedido, IdGarcom: garcom, IdProduto: produto,
+            Quantidade: quantidade, ValorItem: valoritem
+        }; // primeiro item da chave é referente ao parametro na controller na action salvar (antes dos dois pontos), e o segundo é o valor depois dos dois pontos
+        $.post(url, parametros)
+            .done(function (data) {
+                if (data.sucesso) {
+                    $('#divItem').prop('hidden', true);
+                    PesquisarItens();
+                    Limpar();
+                } else {
+                    $('#divErroItem').html(data.mensagem);
+                }
+            });
+    }
+
+    function EditarItem(id) {
+        var url = '/ItensPedido/Editar';
+        var parametros = { id: id }
+        $.get(url, parametros)
+            .done(function (data) {
+                if (data.sucesso) {
+                    $('#divItem').prop('hidden', false);
+                    $('#IdItemPedido').val(data.itenspedido.id);
+                    $('#IdGarcom').val(data.itenspedido.idGarcom);
+                    $('#IdProduto').val(data.itenspedido.idProduto);
+                    $('#Quantidade').val(data.itenspedido.quantidade);
+                    $('#ValorItem').val(data.itenspedido.valorItem);
+                } else {
+                    alert('Não encontrado');
+                }
+            });
+    }
+
+    function Limpar(){
+        $('#IdItemPedido').val('');
+        $('#IdGarcom').val('');
+        $('#IdProduto').val('');
+        $('#Quantidade').val('');
+        $('#ValorItem').val('');
+    }
+
+    function Cancelar(){
+        $('#divItem').prop('hidden', true);
+        Limpar();
+        
+    }
+
+    function Excluir(id) {
+        var result = confirm("Tem certeza que quer excluir?");
+        if (result) {
+            var url = "/ItensPedido/Excluir";
+            var parametros = { id: id };
+            $.get(url, parametros) //data parametros para enviar para a controller
+                .done(function (data) { 
+
+                    if (data.sucesso) { //data retorno da controller
+                    
+                        PesquisarItens();
+                    } else {
+                        alert(data.mensagem);
+                    }
+
+                });
+        }
+    }
+
+    function HabilitarPagamento(){
+        var status = $('#Status').val();
+        //debugger; //para fazer o debug no inspecionar na página web
+        if (status == 'Pago'){
+            $('#FormaPagamento').prop("disabled",false);
+        } else {
+            $('#FormaPagamento').prop("disabled",true);
+        }
+    }
+
+    function Voltar(){
+        window.location.href = "https://localhost:5001/Pedido";
+    }
+
+</script>
+
+
+
+     
+

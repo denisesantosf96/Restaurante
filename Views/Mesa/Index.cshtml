@@ -1,0 +1,53 @@
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model X.PagedList.IPagedList<Mesa>
+@{
+    ViewData["Title"] = "Cadastro de Mesas";
+}
+
+@section Scripts{
+
+}
+<div class="text-center">
+    <h4>Cadastro de Mesas</h4>
+    <select id="idRestaurante" asp-items="@ViewBag.Restaurantes" class="form-control" onchange="Pesquisar()"></select>
+    <input type="text" id="textopesquisa" class="form-control" onkeyup="VerificarDigitacao(event)" value="@HttpContextAccessor.HttpContext.Session.GetString("TextoPesquisa")" >
+    <input type="button" value="Limpar" onclick="Limpar()" class="btn btn-primary">
+    <input type="button" value="Pesquisar" onclick="Pesquisar()" class="btn btn-primary">
+    <a asp-area="" asp-controller="Mesa" asp-action="Detalhe"><input type="button" value="Novo"
+            class="btn btn-primary" style="margin-top: 30px; margin-bottom: 30px;"></a>
+    <div id="divpartial">
+        <partial name="~/Views/Mesa/ListaPartialView.cshtml" />
+    </div>
+</div>
+
+<script>
+    function Limpar() {
+        $('#textopesquisa').val(''); //atribuindo valor vazio ao input com id textopesquisa. o val preenchido significa que esta atribuindo este valor
+        Pesquisar();
+    }
+
+    function Pesquisar() {
+        //var result = document.getElementById("textopesquisa").value;
+        var result = $('#textopesquisa').val(); //atribui a variavel result o valor do input com id textopesquisa  . quando o val está vazio significa que ele esta pegando o valor  
+        var idRestaurante = $('#idRestaurante').val();
+        var numerodamesa = $('#numerodamesa').val();
+        var url = "/Mesa/ListaPartialView";
+        var parametros = { localizacao: result, idRestaurante: idRestaurante, numerodamesa: numerodamesa};
+        $.get(url, parametros) //data parametros para enviar para a controller
+            .done(function (data) {
+                $('#divpartial').html(data);  //como essa requisiçao retorna o partialview no "data", ele incherta no html dentro da divpartial.  
+            });
+    }
+
+    function VerificarDigitacao(e) {
+        var code = (e.keyCode ? e.keyCode : e.which);
+        if (code == 13) { //Enter keycode
+            Pesquisar();
+        }
+    }
+
+    function Excluir(id) {
+        alert("Solicitação negada! A mesa só pode ser excluída através do pedido");
+    }
+</script>

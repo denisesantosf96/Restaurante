@@ -1,0 +1,83 @@
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model X.PagedList.IPagedList<Pedido>
+@{
+    ViewData["Title"] = "Cadastro de Pedidos";
+}
+
+@section Scripts{
+
+}
+<div class="text-center">
+    <h4>Cadastro de Pedidos</h4>
+    <select id="status"  class="form-control" onchange="Pesquisar()" value="@HttpContextAccessor.HttpContext.Session.GetString("status")">
+    <option value="">Mostrar Todos</option>
+    <option>Aberto</option>
+    <option>Cancelado</option>
+    <option>Pago</option>
+    </select>
+    <select id="idRestaurante" class="form-control" onchange="Pesquisar()" asp-items="@ViewBag.Restaurantes"></select>
+    <input type="date" class="form-control" id="datainicial" value="@HttpContextAccessor.HttpContext.Session.GetString("datainicial")">
+    <input type="date" class="form-control" id="datafinal" value="@HttpContextAccessor.HttpContext.Session.GetString("datafinal")">
+    <input type="button" value="Limpar" onclick="Limpar()" class="btn btn-primary">
+    <input type="button" value="Pesquisar" onclick="Pesquisar()" class="btn btn-primary">
+    <input type="button" value="Novo" onclick="Redirecionar()" class="btn btn-primary" style="margin-top: 30px; margin-bottom: 30px;">
+    <div id="divpartial">
+        <partial name="~/Views/Pedido/ListaPartialView.cshtml"/>
+    </div>
+</div>
+
+<script>
+    function Redirecionar() {
+        var restaurante = $('#idRestaurante').val(); //idRestaurante do select da própria página da index
+        window.location = "Pedido/Detalhe?idrestaurante="+restaurante // idrestaurante da controller
+    }
+
+    function Limpar() {
+        $('#datainicial').val('');
+        $('#datafinal').val('');
+        $('#status').val('');
+        $('#idRestaurante').val(''); //atribuindo valor vazio ao input com id textopesquisa. o val preenchido significa que esta atribuindo este valor
+        Pesquisar();
+    }
+
+    function Pesquisar() {
+        //var result = document.getElementById("textopesquisa").value;
+        //var result = $('#textopesquisa').val(); //atribui a variavel result o valor do input com id textopesquisa  . quando o val está vazio significa que ele esta pegando o valor  
+
+        var idRestaurante = $('#idRestaurante').val();
+        var datainicial = $('#datainicial').val();
+        var datafinal = $('#datafinal').val();
+        var url = "/Pedido/ListaPartialView";
+        var parametros = {status: $('#status').val(), idRestaurante: idRestaurante, datainicial: datainicial, datafinal: datafinal}; // primeiro item antes do dois pontos (status) é o parametro da controller, e o segundo é o valor, a variavel 
+        $.get(url, parametros) // get obter dados da requisiçao
+            .done(function (data) {//data parametros para enviar para a controller
+                $('#divpartial').html(data);  //como essa requisiçao retorna o partialview no "data", ele incherta no html dentro da divpartial.  
+            });
+    }
+
+    function VerificarDigitacao(e) {
+        var code = (e.keyCode ? e.keyCode : e.which);
+        if (code == 13) { //Enter keycode
+            Pesquisar();
+        }
+    }
+
+    function Excluir(id) {
+        var result = confirm("Tem certeza que quer excluir?");
+        if (result) {
+            var url = "/Pedido/Excluir";
+            var parametros = { id: id };
+            $.get(url, parametros) //data parametros para enviar para a controller
+                .done(function (data) { // data retorno da controller
+
+                    if (data.sucesso) { //data retorno da controller
+                        document.location.reload(true);
+                    } else {
+                        alert(data.mensagem);
+                    }
+
+                });
+        }
+    }
+</script>
