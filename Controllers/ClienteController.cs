@@ -23,7 +23,7 @@ namespace Restaurante.Controllers
         public IActionResult Index(int? pagina)
         {
             var nome = HttpContext.Session.GetString("TextoPesquisa");          
-            int numeroPagina = (pagina ?? 1);
+            int numeroPagina = (pagina ?? 1); //Comentario Teste Git
 
             MySqlParameter[] parametros = new MySqlParameter[]{
                 new MySqlParameter("_nome", nome)
