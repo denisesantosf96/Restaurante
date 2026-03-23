@@ -16,7 +16,7 @@ O sistema permite registrar pedidos e facilitar o fluxo de atendimento.
 - Controle de clientes
 - Organização dos pedidos
 - Listagem de registros
-- Cálculo por pedido
+- Cálculo de valor a ser pago
 
 ## 📚 Aprendizados
 - Estruturação de sistema web
