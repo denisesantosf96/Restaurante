@@ -9,6 +9,7 @@ O sistema permite registrar pedidos e facilitar o fluxo de atendimento.
 - C#
 - ASP.NET Core
 - MariaDB (banco de dados relacional compatível com MySQL)
+- HTML, CSS, JavaScript, Bootstrap
 
 ## 🎯 Funcionalidades
 - Cadastro de pedidos
